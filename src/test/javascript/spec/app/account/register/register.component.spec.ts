@@ -65,7 +65,6 @@ describe('Component Tests', () => {
                     });
                     expect(comp.success).toEqual(true);
                     expect(comp.registerAccount.langKey).toEqual('en');
-                    
                     expect(comp.errorUserExists).toBeNull();
                     expect(comp.errorEmailExists).toBeNull();
                     expect(comp.error).toBeNull();

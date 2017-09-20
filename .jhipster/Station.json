@@ -1,0 +1,41 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "transitRoutes",
+            "otherEntityName": "routes",
+            "relationshipType": "many-to-many",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "transitStations"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "code",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "description",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "validTo",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "validFrom",
+            "fieldType": "LocalDate"
+        }
+    ],
+    "changelogDate": "20170920070845",
+    "dto": "mapstruct",
+    "service": "serviceImpl",
+    "entityTableName": "station",
+    "pagination": "pagination"
+}
