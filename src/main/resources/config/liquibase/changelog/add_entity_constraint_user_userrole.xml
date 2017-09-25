@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <!--
+        Added the constraints for entity Routes.
+    -->
+    <changeSet id="20170923000000" author="tkharidass">
+    
+    <dropTable cascadeConstraints="true"
+            tableName="jhi_user_userrole"/>
+            
+            
+ 	<createTable tableName="jhi_user_userrole">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="user_id, role_id" tableName="jhi_user_userrole"/>
+
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="jhi_user_userrole"
+                                 constraintName="fk_role_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user_role"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="jhi_user_userrole"
+                                 constraintName="fk_user_id_userrole"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+      
+    </changeSet>
+</databaseChangeLog>

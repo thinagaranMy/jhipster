@@ -9,4 +9,8 @@
     <include file="config/liquibase/changelog/20170920063930_added_entity_constraints_UserRole.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20170920072422_added_entity_Routes.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20170920070845_added_entity_Station.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/add_entity_constraint_user_userrole.xml" relativeToChangelogFile="false"/>
+    
+    
+    
 </databaseChangeLog>

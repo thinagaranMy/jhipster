@@ -1,15 +1,12 @@
 package com.escobar.bmsapp.service;
 
-import com.escobar.bmsapp.domain.Authority;
-import com.escobar.bmsapp.domain.User;
-import com.escobar.bmsapp.repository.AuthorityRepository;
-import com.escobar.bmsapp.config.Constants;
-import com.escobar.bmsapp.repository.UserRepository;
-import com.escobar.bmsapp.repository.search.UserSearchRepository;
-import com.escobar.bmsapp.security.AuthoritiesConstants;
-import com.escobar.bmsapp.security.SecurityUtils;
-import com.escobar.bmsapp.service.util.RandomUtil;
-import com.escobar.bmsapp.service.dto.UserDTO;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +17,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.escobar.bmsapp.config.Constants;
+import com.escobar.bmsapp.domain.Authority;
+import com.escobar.bmsapp.domain.User;
+import com.escobar.bmsapp.domain.UserRole;
+import com.escobar.bmsapp.repository.AuthorityRepository;
+import com.escobar.bmsapp.repository.UserRepository;
+import com.escobar.bmsapp.repository.UserRoleRepository;
+import com.escobar.bmsapp.repository.search.UserSearchRepository;
+import com.escobar.bmsapp.security.AuthoritiesConstants;
+import com.escobar.bmsapp.security.SecurityUtils;
+import com.escobar.bmsapp.service.dto.UserDTO;
+import com.escobar.bmsapp.service.util.RandomUtil;
 
 /**
  * Service class for managing users.
@@ -41,12 +46,16 @@ public class UserService {
     private final UserSearchRepository userSearchRepository;
 
     private final AuthorityRepository authorityRepository;
+    
+    private final UserRoleRepository userRoleRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, AuthorityRepository authorityRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, 
+    		AuthorityRepository authorityRepository, UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userSearchRepository = userSearchRepository;
         this.authorityRepository = authorityRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -85,31 +94,41 @@ public class UserService {
             });
     }
 
+    // Manually added by thinagaran
+    public User createUserWithRoles(String login, String password, String firstName, String lastName, String email,
+            String imageUrl, String langKey, Set<String> roles) {
+
+            User newUser = new User();
+            Authority authority = authorityRepository.findOne(AuthoritiesConstants.USER);
+            Set<Authority> authorities = new HashSet<>();
+            Set<UserRole> userRoles = new HashSet<>();
+            roles.forEach(
+            		role -> userRoles.add(userRoleRepository.findOneByCode(role)));
+            newUser.setUserRoles(userRoles);
+            String encryptedPassword = passwordEncoder.encode(password);
+            newUser.setLogin(login);
+            // new user gets initially a generated password
+            newUser.setPassword(encryptedPassword);
+            newUser.setFirstName(firstName);
+            newUser.setLastName(lastName);
+            newUser.setEmail(email);
+            newUser.setImageUrl(imageUrl);
+            newUser.setLangKey(langKey);
+            // new user is not active
+            newUser.setActivated(false);
+            // new user gets registration key
+            newUser.setActivationKey(RandomUtil.generateActivationKey());
+            authorities.add(authority);
+            newUser.setAuthorities(authorities);
+            userRepository.save(newUser);
+            userSearchRepository.save(newUser);
+            log.debug("Created Information for User: {}", newUser);
+            return newUser;
+        }
     public User createUser(String login, String password, String firstName, String lastName, String email,
         String imageUrl, String langKey) {
-
-        User newUser = new User();
-        Authority authority = authorityRepository.findOne(AuthoritiesConstants.USER);
-        Set<Authority> authorities = new HashSet<>();
-        String encryptedPassword = passwordEncoder.encode(password);
-        newUser.setLogin(login);
-        // new user gets initially a generated password
-        newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(firstName);
-        newUser.setLastName(lastName);
-        newUser.setEmail(email);
-        newUser.setImageUrl(imageUrl);
-        newUser.setLangKey(langKey);
-        // new user is not active
-        newUser.setActivated(false);
-        // new user gets registration key
-        newUser.setActivationKey(RandomUtil.generateActivationKey());
-        authorities.add(authority);
-        newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
-        userSearchRepository.save(newUser);
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
+    	return createUserWithRoles( login,  password,  firstName,  lastName,  email,
+                 imageUrl,  langKey, null) ;
     }
 
     public User createUser(UserDTO userDTO) {
@@ -130,6 +149,14 @@ public class UserService {
                 authority -> authorities.add(authorityRepository.findOne(authority))
             );
             user.setAuthorities(authorities);
+        }
+        
+        if (userDTO.getRoles() != null) {
+            Set<UserRole> roles = new HashSet<>();
+            userDTO.getRoles().forEach(
+                role -> roles.add(userRoleRepository.findOneByCode(role))
+            );
+            user.setUserRoles(roles);
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
@@ -185,6 +212,9 @@ public class UserService {
                 userDTO.getAuthorities().stream()
                     .map(authorityRepository::findOne)
                     .forEach(managedAuthorities::add);
+                Set<UserRole> managedRoles = user.getUserRoles();
+                managedRoles.clear();
+                userDTO.getRoles().stream().map(userRoleRepository::findOneByCode).forEach(managedRoles::add);
                 userSearchRepository.save(user);
                 log.debug("Changed Information for User: {}", user);
                 return user;

@@ -20,4 +20,5 @@ public interface UserRoleRepository extends JpaRepository<UserRole,Long> {
 //    @Query("select user_role from UserRole user_role left join fetch user_role.user_userRoles where user_role.id =:id")
 //    UserRole findOneWithEagerRelationships(@Param("id") Long id);
     
+		UserRole findOneByCode(String code);
 }
