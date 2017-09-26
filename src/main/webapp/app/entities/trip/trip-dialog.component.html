@@ -1,0 +1,127 @@
+<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="myTripLabel">Create or edit a Trip</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                (click)="clear()">&times;</button>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" [hidden]="!trip.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                   [(ngModel)]="trip.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_code">Code</label>
+            <input type="text" class="form-control" name="code" id="field_code"
+                [(ngModel)]="trip.code" required />
+            <div [hidden]="!(editForm.controls.code?.dirty && editForm.controls.code?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.code?.errors?.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_description">Description</label>
+            <input type="text" class="form-control" name="description" id="field_description"
+                [(ngModel)]="trip.description" required />
+            <div [hidden]="!(editForm.controls.description?.dirty && editForm.controls.description?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.description?.errors?.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_passengerCount">Passenger Count</label>
+            <input type="number" class="form-control" name="passengerCount" id="field_passengerCount"
+                [(ngModel)]="trip.passengerCount" required min="0" />
+            <div [hidden]="!(editForm.controls.passengerCount?.dirty && editForm.controls.passengerCount?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.passengerCount?.errors?.required">
+                   This field is required.
+                </small>
+                <small class="form-text text-danger"
+                    [hidden]="!editForm.controls.passengerCount?.errors?.min">
+                    This field should be at least 0.
+                </small>
+                <small class="form-text text-danger"
+                    [hidden]="!editForm.controls.passengerCount?.errors?.number">
+                    This field should be a number.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_departTime">Depart Time</label>
+            <div class="input-group">
+                <input id="field_departTime" type="text" class="form-control" name="departTime" ngbDatepicker  #departTimeDp="ngbDatepicker" [(ngModel)]="trip.departTime"
+                required/>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" (click)="departTimeDp.toggle()"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+            <div [hidden]="!(editForm.controls.departTime?.dirty && editForm.controls.departTime?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.departTime?.errors?.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_scheduledTime">Scheduled Time</label>
+            <div class="input-group">
+                <input id="field_scheduledTime" type="text" class="form-control" name="scheduledTime" ngbDatepicker  #scheduledTimeDp="ngbDatepicker" [(ngModel)]="trip.scheduledTime"
+                required/>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" (click)="scheduledTimeDp.toggle()"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+            <div [hidden]="!(editForm.controls.scheduledTime?.dirty && editForm.controls.scheduledTime?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.scheduledTime?.errors?.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_arrivalTime">Arrival Time</label>
+            <div class="input-group">
+                <input id="field_arrivalTime" type="text" class="form-control" name="arrivalTime" ngbDatepicker  #arrivalTimeDp="ngbDatepicker" [(ngModel)]="trip.arrivalTime"
+                />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" (click)="arrivalTimeDp.toggle()"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="field_routes">Routes</label>
+            <select class="form-control" id="field_routes" name="routes" [(ngModel)]="trip.routesId"  required>
+                <option [ngValue]="routesOption.id" *ngFor="let routesOption of routes; trackBy: trackRoutesById">{{routesOption.code}}</option>
+            </select>
+        </div>
+        <div [hidden]="!(editForm.controls.routes?.dirty && editForm.controls.routes?.invalid)">
+            <small class="form-text text-danger"
+                [hidden]="!editForm.controls.routes?.errors?.required">
+                This field is required.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="field_tripMaster">Trip Master</label>
+            <select class="form-control" id="field_tripMaster" name="tripMaster" [(ngModel)]="trip.tripMasterId" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="userOption.id" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.login}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="clear()">
+            <span class="fa fa-ban"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+            <span class="fa fa-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

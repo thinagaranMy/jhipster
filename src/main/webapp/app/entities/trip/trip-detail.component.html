@@ -1,0 +1,55 @@
+
+<div *ngIf="trip">
+    <h2><span>Trip</span> {{trip.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span>Code</span></dt>
+        <dd>
+            <span>{{trip.code}}</span>
+        </dd>
+        <dt><span>Description</span></dt>
+        <dd>
+            <span>{{trip.description}}</span>
+        </dd>
+        <dt><span>Passenger Count</span></dt>
+        <dd>
+            <span>{{trip.passengerCount}}</span>
+        </dd>
+        <dt><span>Depart Time</span></dt>
+        <dd>
+            <span>{{trip.departTime | date:'mediumDate'}}</span>
+        </dd>
+        <dt><span>Scheduled Time</span></dt>
+        <dd>
+            <span>{{trip.scheduledTime | date:'mediumDate'}}</span>
+        </dd>
+        <dt><span>Arrival Time</span></dt>
+        <dd>
+            <span>{{trip.arrivalTime | date:'mediumDate'}}</span>
+        </dd>
+        <dt><span>Routes</span></dt>
+        <dd>
+            <div *ngIf="trip.routesId">
+                <a [routerLink]="['/routes', trip.routesId]">{{trip.routesCode}}</a>
+            </div>
+        </dd>
+        <dt><span>Trip Master</span></dt>
+        <dd>
+            {{trip.tripMasterLogin}}
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'trip/'+ trip.id + '/edit'} }]"
+            replaceUrl="true"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span> Edit</span>
+    </button>
+</div>
