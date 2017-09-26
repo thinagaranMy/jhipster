@@ -1,6 +1,7 @@
 import { Injectable, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe } from '@angular/common';
 import { Trip } from './trip.model';
 import { TripService } from './trip.service';
 
@@ -9,6 +10,7 @@ export class TripPopupService {
     private ngbModalRef: NgbModalRef;
 
     constructor(
+        private datePipe: DatePipe,
         private modalService: NgbModal,
         private router: Router,
         private tripService: TripService
@@ -26,27 +28,12 @@ export class TripPopupService {
 
             if (id) {
                 this.tripService.find(id).subscribe((trip) => {
-                    if (trip.departTime) {
-                        trip.departTime = {
-                            year: trip.departTime.getFullYear(),
-                            month: trip.departTime.getMonth() + 1,
-                            day: trip.departTime.getDate()
-                        };
-                    }
-                    if (trip.scheduledTime) {
-                        trip.scheduledTime = {
-                            year: trip.scheduledTime.getFullYear(),
-                            month: trip.scheduledTime.getMonth() + 1,
-                            day: trip.scheduledTime.getDate()
-                        };
-                    }
-                    if (trip.arrivalTime) {
-                        trip.arrivalTime = {
-                            year: trip.arrivalTime.getFullYear(),
-                            month: trip.arrivalTime.getMonth() + 1,
-                            day: trip.arrivalTime.getDate()
-                        };
-                    }
+                    trip.scheduledTime = this.datePipe
+                        .transform(trip.scheduledTime, 'yyyy-MM-ddThh:mm');
+                    trip.departureTime = this.datePipe
+                        .transform(trip.departureTime, 'yyyy-MM-ddThh:mm');
+                    trip.arrivalTime = this.datePipe
+                        .transform(trip.arrivalTime, 'yyyy-MM-ddThh:mm');
                     this.ngbModalRef = this.tripModalRef(component, trip);
                     resolve(this.ngbModalRef);
                 });

@@ -26,8 +26,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,14 +53,17 @@ public class TripResourceIntTest {
     private static final Integer DEFAULT_PASSENGER_COUNT = 0;
     private static final Integer UPDATED_PASSENGER_COUNT = 1;
 
-    private static final LocalDate DEFAULT_DEPART_TIME = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_DEPART_TIME = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_SCHEDULED_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_SCHEDULED_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final LocalDate DEFAULT_SCHEDULED_TIME = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_SCHEDULED_TIME = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_DEPARTURE_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_DEPARTURE_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final LocalDate DEFAULT_ARRIVAL_TIME = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_ARRIVAL_TIME = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_ARRIVAL_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_ARRIVAL_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final Boolean DEFAULT_ACTIVE_TRIP = false;
+    private static final Boolean UPDATED_ACTIVE_TRIP = true;
 
     @Autowired
     private TripRepository tripRepository;
@@ -111,9 +114,10 @@ public class TripResourceIntTest {
             .code(DEFAULT_CODE)
             .description(DEFAULT_DESCRIPTION)
             .passengerCount(DEFAULT_PASSENGER_COUNT)
-            .departTime(DEFAULT_DEPART_TIME)
             .scheduledTime(DEFAULT_SCHEDULED_TIME)
-            .arrivalTime(DEFAULT_ARRIVAL_TIME);
+            .departureTime(DEFAULT_DEPARTURE_TIME)
+            .arrivalTime(DEFAULT_ARRIVAL_TIME)
+            .activeTrip(DEFAULT_ACTIVE_TRIP);
         // Add required entity
         Routes routes = RoutesResourceIntTest.createEntity(em);
         em.persist(routes);
@@ -147,9 +151,10 @@ public class TripResourceIntTest {
         assertThat(testTrip.getCode()).isEqualTo(DEFAULT_CODE);
         assertThat(testTrip.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testTrip.getPassengerCount()).isEqualTo(DEFAULT_PASSENGER_COUNT);
-        assertThat(testTrip.getDepartTime()).isEqualTo(DEFAULT_DEPART_TIME);
         assertThat(testTrip.getScheduledTime()).isEqualTo(DEFAULT_SCHEDULED_TIME);
+        assertThat(testTrip.getDepartureTime()).isEqualTo(DEFAULT_DEPARTURE_TIME);
         assertThat(testTrip.getArrivalTime()).isEqualTo(DEFAULT_ARRIVAL_TIME);
+        assertThat(testTrip.isActiveTrip()).isEqualTo(DEFAULT_ACTIVE_TRIP);
 
         // Validate the Trip in Elasticsearch
         Trip tripEs = tripSearchRepository.findOne(testTrip.getId());
@@ -235,10 +240,10 @@ public class TripResourceIntTest {
 
     @Test
     @Transactional
-    public void checkDepartTimeIsRequired() throws Exception {
+    public void checkScheduledTimeIsRequired() throws Exception {
         int databaseSizeBeforeTest = tripRepository.findAll().size();
         // set the field null
-        trip.setDepartTime(null);
+        trip.setScheduledTime(null);
 
         // Create the Trip, which fails.
         TripDTO tripDTO = tripMapper.toDto(trip);
@@ -254,10 +259,29 @@ public class TripResourceIntTest {
 
     @Test
     @Transactional
-    public void checkScheduledTimeIsRequired() throws Exception {
+    public void checkDepartureTimeIsRequired() throws Exception {
         int databaseSizeBeforeTest = tripRepository.findAll().size();
         // set the field null
-        trip.setScheduledTime(null);
+        trip.setDepartureTime(null);
+
+        // Create the Trip, which fails.
+        TripDTO tripDTO = tripMapper.toDto(trip);
+
+        restTripMockMvc.perform(post("/api/trips")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Trip> tripList = tripRepository.findAll();
+        assertThat(tripList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    public void checkActiveTripIsRequired() throws Exception {
+        int databaseSizeBeforeTest = tripRepository.findAll().size();
+        // set the field null
+        trip.setActiveTrip(null);
 
         // Create the Trip, which fails.
         TripDTO tripDTO = tripMapper.toDto(trip);
@@ -285,9 +309,10 @@ public class TripResourceIntTest {
             .andExpect(jsonPath("$.[*].code").value(hasItem(DEFAULT_CODE.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].passengerCount").value(hasItem(DEFAULT_PASSENGER_COUNT)))
-            .andExpect(jsonPath("$.[*].departTime").value(hasItem(DEFAULT_DEPART_TIME.toString())))
             .andExpect(jsonPath("$.[*].scheduledTime").value(hasItem(DEFAULT_SCHEDULED_TIME.toString())))
-            .andExpect(jsonPath("$.[*].arrivalTime").value(hasItem(DEFAULT_ARRIVAL_TIME.toString())));
+            .andExpect(jsonPath("$.[*].departureTime").value(hasItem(DEFAULT_DEPARTURE_TIME.toString())))
+            .andExpect(jsonPath("$.[*].arrivalTime").value(hasItem(DEFAULT_ARRIVAL_TIME.toString())))
+            .andExpect(jsonPath("$.[*].activeTrip").value(hasItem(DEFAULT_ACTIVE_TRIP.booleanValue())));
     }
 
     @Test
@@ -304,9 +329,10 @@ public class TripResourceIntTest {
             .andExpect(jsonPath("$.code").value(DEFAULT_CODE.toString()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
             .andExpect(jsonPath("$.passengerCount").value(DEFAULT_PASSENGER_COUNT))
-            .andExpect(jsonPath("$.departTime").value(DEFAULT_DEPART_TIME.toString()))
             .andExpect(jsonPath("$.scheduledTime").value(DEFAULT_SCHEDULED_TIME.toString()))
-            .andExpect(jsonPath("$.arrivalTime").value(DEFAULT_ARRIVAL_TIME.toString()));
+            .andExpect(jsonPath("$.departureTime").value(DEFAULT_DEPARTURE_TIME.toString()))
+            .andExpect(jsonPath("$.arrivalTime").value(DEFAULT_ARRIVAL_TIME.toString()))
+            .andExpect(jsonPath("$.activeTrip").value(DEFAULT_ACTIVE_TRIP.booleanValue()));
     }
 
     @Test
@@ -331,9 +357,10 @@ public class TripResourceIntTest {
             .code(UPDATED_CODE)
             .description(UPDATED_DESCRIPTION)
             .passengerCount(UPDATED_PASSENGER_COUNT)
-            .departTime(UPDATED_DEPART_TIME)
             .scheduledTime(UPDATED_SCHEDULED_TIME)
-            .arrivalTime(UPDATED_ARRIVAL_TIME);
+            .departureTime(UPDATED_DEPARTURE_TIME)
+            .arrivalTime(UPDATED_ARRIVAL_TIME)
+            .activeTrip(UPDATED_ACTIVE_TRIP);
         TripDTO tripDTO = tripMapper.toDto(updatedTrip);
 
         restTripMockMvc.perform(put("/api/trips")
@@ -348,9 +375,10 @@ public class TripResourceIntTest {
         assertThat(testTrip.getCode()).isEqualTo(UPDATED_CODE);
         assertThat(testTrip.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testTrip.getPassengerCount()).isEqualTo(UPDATED_PASSENGER_COUNT);
-        assertThat(testTrip.getDepartTime()).isEqualTo(UPDATED_DEPART_TIME);
         assertThat(testTrip.getScheduledTime()).isEqualTo(UPDATED_SCHEDULED_TIME);
+        assertThat(testTrip.getDepartureTime()).isEqualTo(UPDATED_DEPARTURE_TIME);
         assertThat(testTrip.getArrivalTime()).isEqualTo(UPDATED_ARRIVAL_TIME);
+        assertThat(testTrip.isActiveTrip()).isEqualTo(UPDATED_ACTIVE_TRIP);
 
         // Validate the Trip in Elasticsearch
         Trip tripEs = tripSearchRepository.findOne(testTrip.getId());
@@ -413,9 +441,10 @@ public class TripResourceIntTest {
             .andExpect(jsonPath("$.[*].code").value(hasItem(DEFAULT_CODE.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].passengerCount").value(hasItem(DEFAULT_PASSENGER_COUNT)))
-            .andExpect(jsonPath("$.[*].departTime").value(hasItem(DEFAULT_DEPART_TIME.toString())))
             .andExpect(jsonPath("$.[*].scheduledTime").value(hasItem(DEFAULT_SCHEDULED_TIME.toString())))
-            .andExpect(jsonPath("$.[*].arrivalTime").value(hasItem(DEFAULT_ARRIVAL_TIME.toString())));
+            .andExpect(jsonPath("$.[*].departureTime").value(hasItem(DEFAULT_DEPARTURE_TIME.toString())))
+            .andExpect(jsonPath("$.[*].arrivalTime").value(hasItem(DEFAULT_ARRIVAL_TIME.toString())))
+            .andExpect(jsonPath("$.[*].activeTrip").value(hasItem(DEFAULT_ACTIVE_TRIP.booleanValue())));
     }
 
     @Test

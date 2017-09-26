@@ -33,9 +33,10 @@
             <th jhiSortBy="code"><span>Code</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="description"><span>Description</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="passengerCount"><span>Passenger Count</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="departTime"><span>Depart Time</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="scheduledTime"><span>Scheduled Time</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="departureTime"><span>Departure Time</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="arrivalTime"><span>Arrival Time</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="activeTrip"><span>Active Trip</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="routesCode"><span>Routes</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="tripMasterLogin"><span>Trip Master</span> <span class="fa fa-sort"></span></th>
             <th></th>
@@ -47,9 +48,10 @@
                 <td>{{trip.code}}</td>
                 <td>{{trip.description}}</td>
                 <td>{{trip.passengerCount}}</td>
-                <td>{{trip.departTime | date:'mediumDate'}}</td>
-                <td>{{trip.scheduledTime | date:'mediumDate'}}</td>
-                <td>{{trip.arrivalTime | date:'mediumDate'}}</td>
+                <td>{{trip.scheduledTime | date:'medium'}}</td>
+                <td>{{trip.departureTime | date:'medium'}}</td>
+                <td>{{trip.arrivalTime | date:'medium'}}</td>
+                <td>{{trip.activeTrip}}</td>
                 <td>
                     <div *ngIf="trip.routesId">
                         <a [routerLink]="['../routes', trip.routesId  ]" >{{trip.routesCode}}</a>

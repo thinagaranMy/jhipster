@@ -25,9 +25,6 @@ export class TripDialogComponent implements OnInit {
     routes: Routes[];
 
     users: User[];
-    departTimeDp: any;
-    scheduledTimeDp: any;
-    arrivalTimeDp: any;
 
     constructor(
         public activeModal: NgbActiveModal,

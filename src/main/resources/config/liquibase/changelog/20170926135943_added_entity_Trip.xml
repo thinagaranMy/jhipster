@@ -34,16 +34,20 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="depart_time" type="date">
+            <column name="scheduled_time" type="timestamp">
                 <constraints nullable="false" />
             </column>
 
-            <column name="scheduled_time" type="date">
+            <column name="departure_time" type="timestamp">
                 <constraints nullable="false" />
             </column>
 
-            <column name="arrival_time" type="date">
+            <column name="arrival_time" type="timestamp">
                 <constraints nullable="true" />
+            </column>
+
+            <column name="active_trip" type="bit">
+                <constraints nullable="false" />
             </column>
 
             <column name="routes_id" type="bigint">
@@ -56,6 +60,9 @@
 
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
+        <dropDefaultValue tableName="trip" columnName="scheduled_time" columnDataType="datetime"/>
+        <dropDefaultValue tableName="trip" columnName="departure_time" columnDataType="datetime"/>
+        <dropDefaultValue tableName="trip" columnName="arrival_time" columnDataType="datetime"/>
         
     </changeSet>
 </databaseChangeLog>

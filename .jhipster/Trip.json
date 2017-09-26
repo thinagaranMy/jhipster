@@ -44,22 +44,29 @@
             "fieldValidateRulesMin": "0"
         },
         {
-            "fieldName": "departTime",
-            "fieldType": "LocalDate",
+            "fieldName": "scheduledTime",
+            "fieldType": "Instant",
             "fieldValidateRules": [
                 "required"
             ]
         },
         {
-            "fieldName": "scheduledTime",
-            "fieldType": "LocalDate",
+            "fieldName": "departureTime",
+            "fieldType": "Instant",
             "fieldValidateRules": [
                 "required"
             ]
         },
         {
             "fieldName": "arrivalTime",
-            "fieldType": "LocalDate"
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "activeTrip",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
         }
     ],
     "changelogDate": "20170926135943",

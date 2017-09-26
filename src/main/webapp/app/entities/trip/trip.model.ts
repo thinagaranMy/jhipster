@@ -6,11 +6,13 @@ export class Trip implements BaseEntity {
         public code?: string,
         public description?: string,
         public passengerCount?: number,
-        public departTime?: any,
         public scheduledTime?: any,
+        public departureTime?: any,
         public arrivalTime?: any,
+        public activeTrip?: boolean,
         public routesId?: number,
         public tripMasterId?: number,
     ) {
+        this.activeTrip = false;
     }
 }

@@ -54,45 +54,55 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="form-control-label" for="field_departTime">Depart Time</label>
-            <div class="input-group">
-                <input id="field_departTime" type="text" class="form-control" name="departTime" ngbDatepicker  #departTimeDp="ngbDatepicker" [(ngModel)]="trip.departTime"
-                required/>
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" (click)="departTimeDp.toggle()"><i class="fa fa-calendar"></i></button>
-                </span>
-            </div>
-            <div [hidden]="!(editForm.controls.departTime?.dirty && editForm.controls.departTime?.invalid)">
-                <small class="form-text text-danger"
-                   [hidden]="!editForm.controls.departTime?.errors?.required">
-                   This field is required.
-                </small>
-            </div>
-        </div>
-        <div class="form-group">
             <label class="form-control-label" for="field_scheduledTime">Scheduled Time</label>
-            <div class="input-group">
-                <input id="field_scheduledTime" type="text" class="form-control" name="scheduledTime" ngbDatepicker  #scheduledTimeDp="ngbDatepicker" [(ngModel)]="trip.scheduledTime"
-                required/>
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" (click)="scheduledTimeDp.toggle()"><i class="fa fa-calendar"></i></button>
-                </span>
+            <div class="d-flex">
+                <input id="field_scheduledTime" type="datetime-local" class="form-control" name="scheduledTime" [(ngModel)]="trip.scheduledTime"
+                required  />
             </div>
             <div [hidden]="!(editForm.controls.scheduledTime?.dirty && editForm.controls.scheduledTime?.invalid)">
                 <small class="form-text text-danger"
                    [hidden]="!editForm.controls.scheduledTime?.errors?.required">
                    This field is required.
                 </small>
+                <small class="form-text text-danger"
+                    [hidden]="!editForm.controls.scheduledTime?.errors?.ZonedDateTimelocal">
+                    This field should be a date and time.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_departureTime">Departure Time</label>
+            <div class="d-flex">
+                <input id="field_departureTime" type="datetime-local" class="form-control" name="departureTime" [(ngModel)]="trip.departureTime"
+                required  />
+            </div>
+            <div [hidden]="!(editForm.controls.departureTime?.dirty && editForm.controls.departureTime?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.departureTime?.errors?.required">
+                   This field is required.
+                </small>
+                <small class="form-text text-danger"
+                    [hidden]="!editForm.controls.departureTime?.errors?.ZonedDateTimelocal">
+                    This field should be a date and time.
+                </small>
             </div>
         </div>
         <div class="form-group">
             <label class="form-control-label" for="field_arrivalTime">Arrival Time</label>
-            <div class="input-group">
-                <input id="field_arrivalTime" type="text" class="form-control" name="arrivalTime" ngbDatepicker  #arrivalTimeDp="ngbDatepicker" [(ngModel)]="trip.arrivalTime"
-                />
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" (click)="arrivalTimeDp.toggle()"><i class="fa fa-calendar"></i></button>
-                </span>
+            <div class="d-flex">
+                <input id="field_arrivalTime" type="datetime-local" class="form-control" name="arrivalTime" [(ngModel)]="trip.arrivalTime"
+                  />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_activeTrip">Active Trip</label>
+            <input type="checkbox" class="form-control" name="activeTrip" id="field_activeTrip"
+                [(ngModel)]="trip.activeTrip"  />
+            <div [hidden]="!(editForm.controls.activeTrip?.dirty && editForm.controls.activeTrip?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.activeTrip?.errors?.required">
+                   This field is required.
+                </small>
             </div>
         </div>
 

@@ -88,6 +88,26 @@ public class UserDTO {
         this.authorities = authorities;
         this.roles= roles;
     }
+    
+    public UserDTO(Long id, String login, String firstName, String lastName,
+            String email, boolean activated, String imageUrl, String langKey,
+            String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate,
+            Set<String> authorities) {
+
+            this.id = id;
+            this.login = login;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.activated = activated;
+            this.imageUrl = imageUrl;
+            this.langKey = langKey;
+            this.createdBy = createdBy;
+            this.createdDate = createdDate;
+            this.lastModifiedBy = lastModifiedBy;
+            this.lastModifiedDate = lastModifiedDate;
+            this.authorities = authorities;
+        }
 
     public Long getId() {
         return id;

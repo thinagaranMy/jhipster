@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -39,15 +39,19 @@ public class Trip implements Serializable {
     private Integer passengerCount;
 
     @NotNull
-    @Column(name = "depart_time", nullable = false)
-    private LocalDate departTime;
+    @Column(name = "scheduled_time", nullable = false)
+    private Instant scheduledTime;
 
     @NotNull
-    @Column(name = "scheduled_time", nullable = false)
-    private LocalDate scheduledTime;
+    @Column(name = "departure_time", nullable = false)
+    private Instant departureTime;
 
     @Column(name = "arrival_time")
-    private LocalDate arrivalTime;
+    private Instant arrivalTime;
+
+    @NotNull
+    @Column(name = "active_trip", nullable = false)
+    private Boolean activeTrip;
 
     @ManyToOne(optional = false)
     @NotNull
@@ -103,43 +107,56 @@ public class Trip implements Serializable {
         this.passengerCount = passengerCount;
     }
 
-    public LocalDate getDepartTime() {
-        return departTime;
-    }
-
-    public Trip departTime(LocalDate departTime) {
-        this.departTime = departTime;
-        return this;
-    }
-
-    public void setDepartTime(LocalDate departTime) {
-        this.departTime = departTime;
-    }
-
-    public LocalDate getScheduledTime() {
+    public Instant getScheduledTime() {
         return scheduledTime;
     }
 
-    public Trip scheduledTime(LocalDate scheduledTime) {
+    public Trip scheduledTime(Instant scheduledTime) {
         this.scheduledTime = scheduledTime;
         return this;
     }
 
-    public void setScheduledTime(LocalDate scheduledTime) {
+    public void setScheduledTime(Instant scheduledTime) {
         this.scheduledTime = scheduledTime;
     }
 
-    public LocalDate getArrivalTime() {
+    public Instant getDepartureTime() {
+        return departureTime;
+    }
+
+    public Trip departureTime(Instant departureTime) {
+        this.departureTime = departureTime;
+        return this;
+    }
+
+    public void setDepartureTime(Instant departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public Instant getArrivalTime() {
         return arrivalTime;
     }
 
-    public Trip arrivalTime(LocalDate arrivalTime) {
+    public Trip arrivalTime(Instant arrivalTime) {
         this.arrivalTime = arrivalTime;
         return this;
     }
 
-    public void setArrivalTime(LocalDate arrivalTime) {
+    public void setArrivalTime(Instant arrivalTime) {
         this.arrivalTime = arrivalTime;
+    }
+
+    public Boolean isActiveTrip() {
+        return activeTrip;
+    }
+
+    public Trip activeTrip(Boolean activeTrip) {
+        this.activeTrip = activeTrip;
+        return this;
+    }
+
+    public void setActiveTrip(Boolean activeTrip) {
+        this.activeTrip = activeTrip;
     }
 
     public Routes getRoutes() {
@@ -195,9 +212,10 @@ public class Trip implements Serializable {
             ", code='" + getCode() + "'" +
             ", description='" + getDescription() + "'" +
             ", passengerCount='" + getPassengerCount() + "'" +
-            ", departTime='" + getDepartTime() + "'" +
             ", scheduledTime='" + getScheduledTime() + "'" +
+            ", departureTime='" + getDepartureTime() + "'" +
             ", arrivalTime='" + getArrivalTime() + "'" +
+            ", activeTrip='" + isActiveTrip() + "'" +
             "}";
     }
 }

@@ -16,17 +16,21 @@
         <dd>
             <span>{{trip.passengerCount}}</span>
         </dd>
-        <dt><span>Depart Time</span></dt>
-        <dd>
-            <span>{{trip.departTime | date:'mediumDate'}}</span>
-        </dd>
         <dt><span>Scheduled Time</span></dt>
         <dd>
-            <span>{{trip.scheduledTime | date:'mediumDate'}}</span>
+            <span>{{trip.scheduledTime | date:'medium'}}</span>
+        </dd>
+        <dt><span>Departure Time</span></dt>
+        <dd>
+            <span>{{trip.departureTime | date:'medium'}}</span>
         </dd>
         <dt><span>Arrival Time</span></dt>
         <dd>
-            <span>{{trip.arrivalTime | date:'mediumDate'}}</span>
+            <span>{{trip.arrivalTime | date:'medium'}}</span>
+        </dd>
+        <dt><span>Active Trip</span></dt>
+        <dd>
+            <span>{{trip.activeTrip}}</span>
         </dd>
         <dt><span>Routes</span></dt>
         <dd>

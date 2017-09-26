@@ -65,22 +65,22 @@ export class TripService {
     }
 
     private convertItemFromServer(entity: any) {
-        entity.departTime = this.dateUtils
-            .convertLocalDateFromServer(entity.departTime);
         entity.scheduledTime = this.dateUtils
-            .convertLocalDateFromServer(entity.scheduledTime);
+            .convertDateTimeFromServer(entity.scheduledTime);
+        entity.departureTime = this.dateUtils
+            .convertDateTimeFromServer(entity.departureTime);
         entity.arrivalTime = this.dateUtils
-            .convertLocalDateFromServer(entity.arrivalTime);
+            .convertDateTimeFromServer(entity.arrivalTime);
     }
 
     private convert(trip: Trip): Trip {
         const copy: Trip = Object.assign({}, trip);
-        copy.departTime = this.dateUtils
-            .convertLocalDateToServer(trip.departTime);
-        copy.scheduledTime = this.dateUtils
-            .convertLocalDateToServer(trip.scheduledTime);
-        copy.arrivalTime = this.dateUtils
-            .convertLocalDateToServer(trip.arrivalTime);
+
+        copy.scheduledTime = this.dateUtils.toDate(trip.scheduledTime);
+
+        copy.departureTime = this.dateUtils.toDate(trip.departureTime);
+
+        copy.arrivalTime = this.dateUtils.toDate(trip.arrivalTime);
         return copy;
     }
 }
